@@ -185,7 +185,7 @@ class OpenAIAgent extends BaseAIAgent {
 
         const initialUserMessage = {
             role: 'user',
-            content: `Changed files for review (${changedFiles.length} files): ${JSON.stringify(simpleChangedFiles, null, 2)}`
+            content: `需要审查的变更文件（共${changedFiles.length}个文件）：${JSON.stringify(simpleChangedFiles, null, 2)}`
         };
 
         reviewState.messageHistory.push(initialUserMessage);

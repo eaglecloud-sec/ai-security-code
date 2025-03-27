@@ -174,7 +174,7 @@ class AnthropicAgent extends BaseAIAgent {
                 content: [
                     {
                         type: 'text',
-                        text: `Here are the changed files in the pull request that need review (${changedFiles.length} files): ${JSON.stringify(changedFiles, null, 2)}\n\nPlease review these files for issues and provide specific actionable comments where appropriate. If you need to see a file's content, use the get_file_content tool. When you're done reviewing, use the mark_as_done tool with a brief summary.`
+                        text: `以下是需要审查的拉取请求中的变更文件（共${changedFiles.length}个文件）：${JSON.stringify(changedFiles, null, 2)}\n\n请审查这些文件中的问题，并在适当的地方提供具体的可操作建议。如果需要查看文件内容，请使用 get_file_content 工具。审查完成后，请使用 mark_as_done 工具提交简要总结。`
                     }
                 ]
             };
