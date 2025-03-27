@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: AI 代码审查
-      uses: wanghaichen1/ai-code-review@v1.0.2
+      uses: wanghaichen1/ai-code-review@v1.0.3
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         owner: ${{ github.repository_owner }}
@@ -50,7 +50,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: AI 代码审查
-      uses: wanghaichen1/ai-code-review@v1.0.2
+      uses: wanghaichen1/ai-code-review@v1.0.3
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         owner: ${{ github.repository_owner }}
@@ -76,7 +76,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: AI 代码审查
-      uses: wanghaichen1/ai-code-review@v1.0.2
+      uses: wanghaichen1/ai-code-review@v1.0.3
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         owner: ${{ github.repository_owner }}
@@ -102,7 +102,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: AI 代码审查
-      uses: wanghaichen1/ai-code-review@v1.0.2
+      uses: wanghaichen1/ai-code-review@v1.0.3
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         owner: ${{ github.repository_owner }}
@@ -128,7 +128,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: AI 代码审查
-      uses: wanghaichen1/ai-code-review@v1.0.2
+      uses: wanghaichen1/ai-code-review@v1.0.3
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         owner: ${{ github.repository_owner }}
