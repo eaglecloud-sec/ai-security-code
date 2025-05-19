@@ -4,6 +4,7 @@ const core = require("@actions/core");
 class GitHubAPI {
     constructor(token) {
         this.octokit = github.getOctokit(token);
+        this.comments = [];
     }
 
     /**
@@ -164,9 +165,10 @@ class GitHubAPI {
      */
     async createReviewComment(owner, repo, prNumber, commitId, body, path, side, startLine, line) {
         core.info(`createReviewComment(${path}, ${side}, ${startLine}, ${line}): ${body}`);
+        let response;
         if (startLine === line) {
             core.info(`attempting to create a single line comment for line ${startLine}`);
-            await this.octokit.rest.pulls.createReviewComment({
+            response = await this.octokit.rest.pulls.createReviewComment({
                 owner,
                 repo,
                 pull_number: prNumber,
@@ -178,7 +180,7 @@ class GitHubAPI {
             });
         }
         else {
-            await this.octokit.rest.pulls.createReviewComment({
+            response = await this.octokit.rest.pulls.createReviewComment({
                 owner,
                 repo,
                 pull_number: prNumber,
@@ -191,6 +193,18 @@ class GitHubAPI {
                 line
             });
         }
+        
+        // 添加评论到列表
+        this.addComment({
+            path,
+            body,
+            startLine,
+            endLine: line,
+            side,
+            createdAt: new Date().toISOString()
+        });
+        
+        return response;
     }
 
     /**
@@ -224,7 +238,7 @@ class GitHubAPI {
     }
 
     /**
-     * Gets changed files between two commits.
+     * Gets changed files between two commca 
      * @param {string} owner - The repository owner.
      * @param {string} repo - The repository name.
      * @param {string} baseCommit - The base commit SHA.
@@ -240,6 +254,22 @@ class GitHubAPI {
             head: headCommit,
         });
         return comparison.files || [];
+    }
+
+    /**
+     * 获取所有评论
+     * @returns {Array} 评论列表
+     */
+    getComments() {
+        return this.comments;
+    }
+
+    /**
+     * 添加评论到列表
+     * @param {Object} comment - 评论对象
+     */
+    addComment(comment) {
+        this.comments.push(comment);
     }
 }
 

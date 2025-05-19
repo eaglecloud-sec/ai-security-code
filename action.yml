@@ -65,6 +65,16 @@ inputs:
     description: 'If set to true, the action fails when the review process fails'
     required: false
     default: 'false'
+  webhook_url:
+    description: 'Webhook URL to send review results (optional)'
+    required: false
+  webhook_secret:
+    description: 'Secret key for webhook signature (optional)'
+    required: false
+  webhook_headers:
+    description: 'Additional headers for webhook request (JSON format)'
+    required: false
+    default: '{}'
 
 runs:
   using: 'node20'

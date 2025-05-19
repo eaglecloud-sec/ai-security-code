@@ -1,6 +1,7 @@
 const InputProcessor = require('./input-processor.js');
 const core = require('@actions/core');
 const { AI_REVIEW_COMMENT_PREFIX, SUMMARY_SEPARATOR } = require('./constants');
+const WebhookService = require('./webhook-service');
 
 const main = async () => {
     const inputProcessor = new InputProcessor();
@@ -26,6 +27,26 @@ const main = async () => {
             inputProcessor.pullNumber, 
             commentBody
         );
+
+        // 初始化 Webhook 服务
+        const webhookUrl = core.getInput('webhook_url');
+        const webhookSecret = core.getInput('webhook_secret');
+        const webhookHeaders = JSON.parse(core.getInput('webhook_headers') || '{}');
+        
+        if (webhookUrl) {
+            const webhookService = new WebhookService(webhookUrl, webhookSecret, webhookHeaders);
+            await webhookService.sendReviewResults(
+                {
+                    summary: reviewSummary,
+                    comments: inputProcessor.githubAPI.getComments()
+                },
+                {
+                    owner: inputProcessor.owner,
+                    repo: inputProcessor.repo,
+                    prNumber: inputProcessor.pullNumber
+                }
+            );
+        }
 
     } catch (error) {
         if (!inputProcessor?.failAction) {

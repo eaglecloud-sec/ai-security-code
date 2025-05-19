@@ -4,7 +4,7 @@
 
 ## 描述
 
-使用 OpenAI、Anthropic、Google 或 Deepseek 等各种 AI 模型来分析和提供代码反馈。这个 GitHub Action 通过自动审查拉取请求来帮助提高代码质量，可以专注于指定的文件扩展名，并排除特定路径。
+使用 OpenAI、Anthropic、Google 或 Deepseek 等各种 AI 模型来分析和提供代码反馈。这个 GitHub Action 通过自动审查拉取请求来帮助提高代码质量，可以专注于指定的文件扩展名，并排除特定路径。支持通过 Webhook 将审查结果推送到外部系统。
 
 ## 使用示例
 
@@ -114,7 +114,7 @@ jobs:
         deepseek_model: 'deepseek-chat'
 ```
 
-### 高级配置示例
+### 高级配置示例（包含 Webhook）
 
 ```yaml
 name: 使用高级设置的 AI 代码审查
@@ -143,6 +143,11 @@ jobs:
         include_paths: 'src/,app/'
         exclude_paths: 'test/,docs/'
         fail_action_if_review_failed: 'true'
+
+        # Webhook 配置
+        webhook_url: ${{ secrets.WEBHOOK_URL }}
+        webhook_secret: ${{ secrets.WEBHOOK_SECRET }}
+        webhook_headers: '{"X-Custom-Header": "value"}'
 ```
 
 ## 输入参数
@@ -183,6 +188,61 @@ jobs:
 
 ***fail_action_if_review_failed*** - 可选。如果设置为 true，当审查过程失败时，action 将失败。默认为 'false'。
 
+***webhook_url*** - 可选。用于接收审查结果的 Webhook URL。如果未提供，将不会发送 Webhook 通知。
+
+***webhook_secret*** - 可选。用于 Webhook 请求签名的密钥。如果提供，将在请求头中添加 `X-Webhook-Signature` 签名。
+
+***webhook_headers*** - 可选。Webhook 请求的额外请求头（JSON 格式）。默认为 '{}'。
+
+## Webhook 数据格式
+
+当配置了 `webhook_url` 时，审查结果将通过 POST 请求发送到指定的 URL。请求体格式如下：
+
+```json
+{
+  "event": "code_review",
+  "timestamp": "2024-03-21T10:00:00.000Z",
+  "repository": {
+    "owner": "owner",
+    "name": "repo",
+    "pull_request": 123
+  },
+  "review": {
+    "summary": "代码审查总结...",
+    "comments": [
+      {
+        "path": "src/file.go",
+        "body": "发现安全问题...",
+        "startLine": 10,
+        "endLine": 15,
+        "side": "RIGHT",
+        "createdAt": "2024-03-21T10:00:00.000Z"
+      }
+    ],
+    "total_comments": 1
+  }
+}
+```
+
+### Webhook 安全
+
+如果配置了 `webhook_secret`，系统会在请求头中添加 `X-Webhook-Signature` 签名。签名使用 HMAC-SHA256 算法生成，可用于验证请求的真实性。验证示例：
+
+```javascript
+const crypto = require('crypto');
+
+function verifyWebhookSignature(payload, signature, secret) {
+  const expectedSignature = crypto
+    .createHmac('sha256', secret)
+    .update(payload)
+    .digest('hex');
+  return crypto.timingSafeEqual(
+    Buffer.from(signature),
+    Buffer.from(expectedSignature)
+  );
+}
+```
+
 ## 故障排除
 
 ### 常见问题
@@ -204,3 +264,11 @@ jobs:
   1. 使用 exclude_paths 跳过大文件
   2. 使用 include_extensions 仅关注关键文件类型
   3. 创建更小的 PR，减少更改的文件数量
+
+#### Webhook 发送失败
+- **问题**：Webhook 通知发送失败
+- **解决方案**：
+  1. 检查 webhook_url 是否正确
+  2. 确认目标服务器是否可访问
+  3. 检查 webhook_secret 是否正确（如果配置了签名）
+  4. 查看 GitHub Actions 日志以获取详细错误信息
