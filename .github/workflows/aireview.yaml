@@ -32,6 +32,7 @@ jobs:
           # Soon - Deepseek Configuration (if using Deepseek)
           deepseek_api_key: ${{ secrets.DEEPSEEK_API_KEY }}
           deepseek_model: 'deepseek-chat'  # Optional
+          deepseek_api_base_url: 'https://api.deepseek.com/'  # Optional, defaults to 'https://api.deepseek.com/'
           
           # Repository Configuration
           owner: ${{ github.repository_owner }}

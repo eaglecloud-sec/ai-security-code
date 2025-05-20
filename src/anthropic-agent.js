@@ -5,9 +5,16 @@ const BaseAIAgent = require("./base-ai-agent");
 const c_max_completion_tokens = 8192;
 
 class AnthropicAgent extends BaseAIAgent {
-    constructor(apiKey, fileContentGetter, fileCommentator, model) {
+    constructor(apiKey, fileContentGetter, fileCommentator, model, baseURL = null) {
         super(apiKey, fileContentGetter, fileCommentator, model);
-        this.anthropic = new Anthropic({ apiKey });
+        
+        if (baseURL == null || baseURL === undefined || baseURL.trim() === '') {
+            info("使用默认 Anthropic API URL");
+            this.anthropic = new Anthropic({ apiKey });
+        } else {
+            info(`使用自定义 baseUrl: ${baseURL}`);
+            this.anthropic = new Anthropic({ apiKey, baseURL });
+        }
     }
 
     async initialize() {

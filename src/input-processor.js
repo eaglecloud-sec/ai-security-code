@@ -16,6 +16,7 @@ class InputProcessor {
         this._aiProvider = null;
         this._apiKey = null;
         this._model = null;
+        this._apiBaseUrl = null;
         this._failAction = true;
         this._githubAPI = null;
         this._baseCommit = null;
@@ -72,6 +73,7 @@ class InputProcessor {
         this._aiProvider = this._sanitizeInput(core.getInput("ai_provider", { required: true, trimWhitespace: true }));
         this._apiKey = this._sanitizeInput(core.getInput(`${this._aiProvider}_api_key`, { required: true, trimWhitespace: true }));
         this._model = this._sanitizeInput(core.getInput(`${this._aiProvider}_model`, { required: true, trimWhitespace: true }));
+        this._apiBaseUrl = this._sanitizeInput(core.getInput(`${this._aiProvider}_api_base_url`, { required: false, trimWhitespace: true }));
         this._failAction = core.getInput("fail_action_if_review_failed", { required: false, trimWhitespace: true }).toLowerCase() === 'true';
         
         this._includeExtensions = this._sanitizeInput(core.getInput("include_extensions", { required: false }));
@@ -211,16 +213,16 @@ class InputProcessor {
         
         switch (this._aiProvider) {
             case 'openai':
-                aiAgent = new OpenAIAgent(this._apiKey, this._fileContentGetter, this._fileCommentator, this._model);
+                aiAgent = new OpenAIAgent(this._apiKey, this._fileContentGetter, this._fileCommentator, this._model, this._apiBaseUrl);
                 break;
             case 'anthropic':
-                aiAgent = new AnthropicAgent(this._apiKey, this._fileContentGetter, this._fileCommentator, this._model);
+                aiAgent = new AnthropicAgent(this._apiKey, this._fileContentGetter, this._fileCommentator, this._model, this._apiBaseUrl);
                 break;
             case 'google':
-                aiAgent = new GoogleAgent(this._apiKey, this._fileContentGetter, this._fileCommentator, this._model);
+                aiAgent = new GoogleAgent(this._apiKey, this._fileContentGetter, this._fileCommentator, this._model, this._apiBaseUrl);
                 break;
             case 'deepseek':
-                aiAgent = new DeepseekAgent(this._apiKey, this._fileContentGetter, this._fileCommentator, this._model);
+                aiAgent = new DeepseekAgent(this._apiKey, this._fileContentGetter, this._fileCommentator, this._model, this._apiBaseUrl);
                 break;
             default:
                 throw new Error(`Unsupported AI provider: ${this._aiProvider}`);
